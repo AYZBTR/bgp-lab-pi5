@@ -5,11 +5,14 @@ Two FRRouting containers in separate ASes establish a BGP session over a virtual
 link and exchange prefixes.
 
 ## Topology
+
+```
 [r1 lo: 192.168.1.1/24]            [r2 lo: 192.168.2.1/24]
-|                                    |
-| eth1: 10.0.0.1/30 ----eBGP---- eth1: 10.0.0.2/30 |
-|                                    |
-AS 65001                            AS 65002
+       |                                    |
+       | eth1: 10.0.0.1/30 ----eBGP---- eth1: 10.0.0.2/30 |
+       |                                    |
+     AS 65001                            AS 65002
+```
 
 
 ## Stack
