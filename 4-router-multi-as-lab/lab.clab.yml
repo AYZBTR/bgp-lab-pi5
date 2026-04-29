@@ -1,0 +1,36 @@
+name: bgp-multi-as
+
+topology:
+  nodes:
+    r1:
+      kind: linux
+      image: quay.io/frrouting/frr:10.1.1
+      binds:
+        - ./r1/daemons:/etc/frr/daemons
+        - ./r1/frr.conf:/etc/frr/frr.conf
+    r2:
+      kind: linux
+      image: quay.io/frrouting/frr:10.1.1
+      binds:
+        - ./r2/daemons:/etc/frr/daemons
+        - ./r2/frr.conf:/etc/frr/frr.conf
+    r3:
+      kind: linux
+      image: quay.io/frrouting/frr:10.1.1
+      binds:
+        - ./r3/daemons:/etc/frr/daemons
+        - ./r3/frr.conf:/etc/frr/frr.conf
+    r4:
+      kind: linux
+      image: quay.io/frrouting/frr:10.1.1
+      binds:
+        - ./r4/daemons:/etc/frr/daemons
+        - ./r4/frr.conf:/etc/frr/frr.conf
+
+  links:
+    # iBGP links inside each AS
+    - endpoints: ["r1:eth1", "r2:eth1"]   # AS 65001 internal
+    - endpoints: ["r3:eth1", "r4:eth1"]   # AS 65002 internal
+    # eBGP links between ASes
+    - endpoints: ["r1:eth2", "r3:eth2"]   # AS 65001 ↔ AS 65002 (path A)
+    - endpoints: ["r2:eth2", "r4:eth2"]   # AS 65001 ↔ AS 65002 (path B)

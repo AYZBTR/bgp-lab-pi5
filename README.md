@@ -1,50 +1,22 @@
-# 2-Router eBGP Lab — FRR on Containerlab (Raspberry Pi 5)
+# BGP Labs on Raspberry Pi 5
 
-A minimal eBGP lab running on a Raspberry Pi 5 (Ubuntu Server 24.04 LTS, ARM64). 
-Two FRRouting containers in separate ASes establish a BGP session over a virtual 
-link and exchange prefixes.
-
-## Topology
-[r1 lo: 192.168.1.1/24]            [r2 lo: 192.168.2.1/24]
-|                                    |
-| eth1: 10.0.0.1/30 ----eBGP---- eth1: 10.0.0.2/30 |
-|                                    |
-AS 65001                            AS 65002
-
+Hands-on BGP networking labs running on a Raspberry Pi 5 (Ubuntu Server 24.04 ARM64) using FRRouting and Containerlab.
 
 ## Stack
 
-- Raspberry Pi 5, 16GB RAM
+- Raspberry Pi 5 Model B, 16GB RAM
 - Ubuntu Server 24.04 LTS (ARM64)
-- Docker + Containerlab 0.74.3
+- Docker + Containerlab 0.74
 - FRRouting 10.1.1
 
-## Lessons learned
+## Labs in this repo
 
-1. **FRR's strict-policy default**: Modern FRR refuses to exchange routes with 
-   external peers unless explicit route-maps are defined. For this lab I used 
-   `no bgp ebgp-requires-policy` to disable the requirement, but in production 
-   I would always configure explicit inbound and outbound route-maps as a safety 
-   measure against route leaks.
+### `2-router-lab/`
+A minimal eBGP lab between two ASes. Demonstrates BGP session establishment, FRR's default-deny policy, and the relationship between the `network` statement and the local routing table. See its README for details.
 
-2. **`network` statement requires an existing route**: BGP's `network` directive 
-   only advertises a prefix if it already exists in the routing table. I added 
-   loopback interfaces with the advertised prefixes so FRR could resolve them 
-   as valid routes. Without this, FRR marks them `inaccessible` and silently 
-   drops them.
+### `4-router-multi-as-lab/`
+A four-router topology across two ASes with iBGP, redundant eBGP links, prefix-list filtering, and route-map policy. Shows path diversity, best-path selection, and filter symmetry across redundant peers.
 
-3. **Soft reconfiguration inbound**: Without `soft-reconfiguration inbound`, 
-   `show ip bgp neighbor X received-routes` cannot show pre-policy received 
-   routes. Useful for diagnostics.
+## Built incrementally
 
-## Verification
-
-After deploy, the BGP session reaches Established state within ~30 seconds 
-and prefixes are exchanged in both directions. End-to-end connectivity 
-between loopbacks confirms the BGP-learned path is operational.
-
-## Next steps
-
-- Expand to a 4-router topology across 2 ASes (iBGP within, eBGP between)
-- Add route-maps, prefix-lists, and AS-path prepending
-- Apply for DN42 membership and run as a live BGP node
+Each lab here was built hands-on, with real debugging along the way (subnet math errors, FRR's default-deny defaults, filter symmetry across redundant links). The commit history reflects the journey, not a polished tutorial.

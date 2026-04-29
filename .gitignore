@@ -1,2 +1,6 @@
 clab-bgp-basics/
 .bash_history
+clab-*/
+*.bak
+.bash_history
+.DS_Store
